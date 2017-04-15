@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/gpu
+END
+gpu.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/gpu/gpu.hpp
+END
+gpumat.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/gpu/gpumat.hpp
+END
+stream_accessor.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/gpu/stream_accessor.hpp
+END
+devmem2d.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/gpu/devmem2d.hpp
+END
+matrix_operations.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/gpu/matrix_operations.hpp
+END

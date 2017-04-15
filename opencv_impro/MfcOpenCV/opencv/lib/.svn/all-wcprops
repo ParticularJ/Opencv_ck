@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib
+END
+opencv_core231d.lib
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib/opencv_core231d.lib
+END
+opencv_imgproc231.lib
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib/opencv_imgproc231.lib
+END
+opencv_highgui231.lib
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib/opencv_highgui231.lib
+END
+opencv_imgproc231d.lib
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib/opencv_imgproc231d.lib
+END
+opencv_core231.lib
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib/opencv_core231.lib
+END
+opencv_highgui231d.lib
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/lib/opencv_highgui231d.lib
+END

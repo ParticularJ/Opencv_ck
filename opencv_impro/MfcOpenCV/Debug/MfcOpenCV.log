@@ -1,0 +1,14 @@
+﻿  stdafx.cpp
+  MfcOpenCVView.cpp
+  MfcOpenCVDoc.cpp
+  MfcOpenCV.cpp
+  MainFrm.cpp
+  ImageProcess.cpp
+c:\users\particularj\desktop\study\图像处理\mfcopencv-2013 to students\mfcopencv\imageprocess.cpp(132): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\particularj\desktop\study\图像处理\mfcopencv-2013 to students\mfcopencv\imageprocess.cpp(133): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\particularj\desktop\study\图像处理\mfcopencv-2013 to students\mfcopencv\imageprocess.cpp(146): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\particularj\desktop\study\图像处理\mfcopencv-2013 to students\mfcopencv\imageprocess.cpp(147): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  ChildFrm.cpp
+  Generating Code...
+  MfcOpenCV.vcxproj -> C:\Users\ParticularJ\Desktop\study\图像处理\MfcOpenCV-2013 to students\Debug\MfcOpenCV.exe
+  MfcOpenCV.vcxproj -> C:\Users\ParticularJ\Desktop\study\图像处理\MfcOpenCV-2013 to students\Debug\MfcOpenCV.pdb (Full PDB)

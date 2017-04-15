@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core
+END
+wimage.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/wimage.hpp
+END
+core_c.h
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/core_c.h
+END
+internal.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/internal.hpp
+END
+mat.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/mat.hpp
+END
+operations.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/operations.hpp
+END
+version.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/version.hpp
+END
+types_c.h
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/types_c.h
+END
+eigen.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/eigen.hpp
+END
+core.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2/core/core.hpp
+END

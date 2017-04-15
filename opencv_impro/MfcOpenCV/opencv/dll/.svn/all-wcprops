@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll
+END
+tbb.dll
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/tbb.dll
+END
+opencv_core231.dll
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/opencv_core231.dll
+END
+opencv_highgui231d.dll
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/opencv_highgui231d.dll
+END
+opencv_core231d.dll
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/opencv_core231d.dll
+END
+tbb_debug.dll
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/tbb_debug.dll
+END
+opencv_imgproc231.dll
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/opencv_imgproc231.dll
+END
+opencv_highgui231.dll
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/opencv_highgui231.dll
+END
+opencv_imgproc231d.dll
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/DDS/!svn/ver/873/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/dll/opencv_imgproc231d.dll
+END

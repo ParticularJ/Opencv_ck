@@ -1,0 +1,101 @@
+10
+
+dir
+946
+http://10.132.10.59/DDS/pcsoftware/KunLenDDS2013/KunLenDDS/opencv/include/opencv2
+http://10.132.10.59/DDS
+
+
+
+2012-03-28T12:35:52.584000Z
+873
+zyx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+765397db-d6ab-e04d-985f-b9ecd8a48f42
+
+contrib
+dir
+
+imgproc
+dir
+
+opencv.hpp
+file
+
+
+
+
+2013-04-30T01:54:32.031250Z
+d6e855c33edf025b6903bf75d35ba63e
+2012-03-28T12:35:52.584000Z
+873
+zyx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2686
+
+calib3d
+dir
+
+objdetect
+dir
+
+features2d
+dir
+
+highgui
+dir
+
+legacy
+dir
+
+ts
+dir
+
+video
+dir
+
+core
+dir
+
+ml
+dir
+
+gpu
+dir
+
+flann
+dir
+

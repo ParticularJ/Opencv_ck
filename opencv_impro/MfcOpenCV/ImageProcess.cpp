@@ -186,7 +186,7 @@ void Rotate(const Mat &src, Mat &dst, double a)
 //直方图均衡化
 void  Histogram(const Mat &src, Mat &dst)
 {
-	dst = src;
+	equalizeHist(src,dst);
 }
 
 //低通滤波
@@ -296,4 +296,11 @@ void gray(const Mat &src, Mat &dst) {
 				dst.at<uchar>(x, y) = t1;
 		}
 	}
+}
+
+//邻域滤波
+void lyfilter(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	Mat ker = (Mat_<float>(3, 3) << 1, 1, 1, 1, 1, 1, 1, 1, 1)/9;
+	filter2D(src, dst, src.depth(), ker);
 }

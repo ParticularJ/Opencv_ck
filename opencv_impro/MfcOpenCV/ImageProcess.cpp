@@ -152,9 +152,35 @@ void Scale(const Mat &src, Mat &dst, double sx, double sy)
 	}
 }
 
+//旋转变换
 void Rotate(const Mat &src, Mat &dst, double a)
 {
-	dst = src;
+	double angle = a *CV_PI / 180;
+	float c = sin(angle), d = cos(angle);
+	int rows = src.rows, cols = src.cols;
+	//旋转后的图像大小
+	int rotate_cols = (fabs(c)*rows + fabs(d)*cols);
+	int rotate_rows = (fabs(d)*rows + fabs(c)*cols);
+	//创建新的图片
+	dst.create(rotate_rows, rotate_cols, CV_8UC1);
+	/*	float map[6];
+	map[0] = b;
+	map[1] = a;
+	map[3] = -map[1];
+	map[4] = map[0];
+	map[2] += (rotate_rows - rows) / 2;
+	map[5] += (rotate_cols - cols) / 2;
+	cout << map[0];*/
+	Mat map_matrix = Mat(2, 3, CV_8UC1);
+	CvPoint2D32f center = cvPoint2D32f(rows / 2, cols / 2);
+	map_matrix = getRotationMatrix2D(center, a, 1.0);
+	map_matrix.at<double>(0, 2) += (int)((rotate_rows - rows) / 2);
+	map_matrix.at<double>(1, 2) += (int)((rotate_cols - cols) / 2);
+
+	////对图像做仿射变换  
+	////CV_WARP_FILL_OUTLIERS - 填充所有输出图像的象素。  
+	////如果部分象素落在输入图像的边界外，那么它们的值设定为 fillval.  
+	warpAffine(src, dst, map_matrix, Size(rotate_rows, rotate_cols), CV_WARP_FILL_OUTLIERS, BORDER_CONSTANT, cvScalarAll(255));
 }
 
 //直方图均衡化
@@ -171,3 +197,103 @@ int LowPass(const Mat &src, Mat &dst, int radius)
 	return 0;
 }
 
+//DFT
+void DFT(const Mat &src, Mat &dst) {
+	int m = getOptimalDFTSize(src.rows);
+	int n = getOptimalDFTSize(src.cols);
+	//将添加的元素初始化为0
+	Mat padded;
+	copyMakeBorder(src, padded, 0, m - src.rows, 0, n - src.cols, BORDER_CONSTANT, Scalar::all(0));
+	//为实部和虚部分配空间,
+	Mat planes[] = { Mat_<float>(padded),Mat::zeros(padded.size(),CV_32F) };
+	Mat complexI;
+	//2代表输入矩阵的个数
+	merge(planes, 2, complexI);
+	dft(complexI, complexI);
+	//分离通道，分别是实部和虚部,并且计算幅值
+	split(complexI, planes);
+	magnitude(planes[0], planes[1], planes[0]);
+	Mat magnitudeImage = planes[0];
+
+	//进行对数尺度缩放
+	magnitudeImage += Scalar::all(1);
+	log(magnitudeImage, magnitudeImage);
+
+	//剪切和重分布，奇数行去掉，因为是虚部的
+	//数&-2，返回最大的偶数
+	magnitudeImage = magnitudeImage(Rect(0, 0, magnitudeImage.cols&-2, magnitudeImage.rows&-2));
+	//重新排列使得远点位于中心
+	int cx = magnitudeImage.cols / 2;
+	int cy = magnitudeImage.rows / 2;
+	Mat q0(magnitudeImage, Rect(0, 0, cx, cy)); //top left
+	Mat q1(magnitudeImage, Rect(cx, 0, cx, cy));//top right
+	Mat q2(magnitudeImage, Rect(0, cy, cx, cy));//bottom left
+	Mat q3(magnitudeImage, Rect(cx, cy, cx, cy));//bottom right
+												 //交换象限，便于显示
+	Mat tmp;
+	q0.copyTo(tmp);
+	q3.copyTo(q0);
+	tmp.copyTo(q3);
+	q1.copyTo(tmp);
+	q2.copyTo(q1);
+	tmp.copyTo(q2);
+
+	//归一化，便于显示
+	normalize(magnitudeImage, magnitudeImage, 0, 1, CV_MINMAX);
+	Mat B;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
+			//cout << magnitudeImage.at<float>(y, x) << endl;
+			magnitudeImage.convertTo(B, CV_8UC1);
+		}
+	}
+	dst = B;
+}
+
+//求反
+void Reverse(const Mat &src, Mat &dst) {
+	dst = ~src;
+}
+
+//增强对比度
+void contrast(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	int t1 = 20, t2 = 220;
+	int s1 = 70, s2 = 180;
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y < src.cols; y++) {
+			if (src.at<uchar>(x, y) <= s1&&src.at<uchar>(x, y)>=0)
+				dst.at<uchar>(x, y) = t1 / s1*src.at<uchar>(x, y);
+			else if (src.at<uchar>(x, y) >= s2&&src.at<uchar>(x, y)<=src.rows)
+				dst.at<uchar>(x, y) = (src.rows - t2) / (src.rows - s2)*(src.at<uchar>(x, y) - s2) + t2;
+			else
+				dst.at<uchar>(x, y) = (t2 - t1) / (s2 - s1)*(src.at<uchar>(x, y) - s1) + t1;
+		}
+	}
+}
+
+//动态范围压缩
+void compress(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y < src.cols; y++) {
+			dst.at<uchar>(x, y) =18* log(1 + src.at<uchar>(x, y));
+		}
+	}
+}
+
+//灰度切分
+void gray(const Mat &src, Mat &dst) {
+	int s1 = 120, s2 = 180;
+	int t1 = 30, t2 = 220;
+	dst = Mat::zeros(src.size(), src.type());
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y < src.cols; y++) {
+			if (src.at<uchar>(x, y) >= s1&&src.at<uchar>(x, y) <= s2)
+				dst.at<uchar>(x, y) = t2;
+			else
+				dst.at<uchar>(x, y) = t1;
+		}
+	}
+}

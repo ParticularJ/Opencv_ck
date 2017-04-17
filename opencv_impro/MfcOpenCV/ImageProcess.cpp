@@ -245,9 +245,10 @@ void DFT(const Mat &src, Mat &dst) {
 		for (int y = 0; y < magnitudeImage.cols; y++) {
 			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
 			//cout << magnitudeImage.at<float>(y, x) << endl;
-			magnitudeImage.convertTo(B, CV_8UC1);
+			
 		}
 	}
+	magnitudeImage.convertTo(B, CV_8UC1);
 	dst = B;
 }
 
@@ -364,6 +365,38 @@ void midfilter(const Mat &src, Mat &dst) {
 					else if (src.at<uchar>(k, m) < min)
 						min = src.at<uchar>(k, m);
 			dst.at<uchar>(x, y) =  (max + min)/2;
+		}
+	}
+}
+
+//梯度锐化滤波
+void gradient(const Mat &src, Mat &dst) {
+	Mat dst1, dst2;
+	Mat ker1 = (Mat_<int>(3, 3) << -1, 0, 1, -1, 0, 1, -1, 0, 1);
+	filter2D(src, dst1, src.depth(),ker1);
+	Mat ker2= (Mat_<int>(3, 3) << 1, 1, 1, 0, 0, 0, -1, -1, -1);
+	filter2D(src, dst2, src.depth(), ker2);
+	dst = dst1 + dst2;
+}
+
+//最大最小锐化滤波
+void Mmfilter(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y <src.cols; y++) {
+			int max = 0, min = 255;
+			for (int k = x; (k <= x + 3) && (k < src.rows); k++)
+				for (int m = y; m <= (y + 3) && (m < src.cols); m++)
+				{
+					if (src.at<uchar>(k, m) > max)
+						max = src.at<uchar>(k, m);
+					else if (src.at<uchar>(k, m) < min)
+						min = src.at<uchar>(k, m);
+				}
+			if (max - src.at<uchar>(x, y) <= src.at<uchar>(x, y) - min)
+				dst.at<uchar>(x, y) = max;
+			else
+				dst.at<uchar>(x, y) = min;
 		}
 	}
 }

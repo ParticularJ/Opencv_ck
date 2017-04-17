@@ -304,3 +304,66 @@ void lyfilter(const Mat &src, Mat &dst) {
 	Mat ker = (Mat_<float>(3, 3) << 1, 1, 1, 1, 1, 1, 1, 1, 1)/9;
 	filter2D(src, dst, src.depth(), ker);
 }
+
+//加权滤波
+void weight(const Mat &src, Mat &dst) {
+	Mat ker = (Mat_<float>(3, 3) << 1, 2, 1, 2, 4, 2, 1, 2, 1)/16;
+	filter2D(src, dst, src.depth(), ker);
+}
+
+//高斯滤波
+void gaussian(const Mat &src, Mat &dst) {
+	GaussianBlur(src, dst, Size(3, 3), 0, 0);
+}
+
+//中值滤波
+void Median(const Mat &src, Mat &dst) {
+	medianBlur(src, dst, 5);
+}
+
+//最大值滤波
+void maxfilter(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y <src.cols; y++) {
+			int max = 0;
+			for (int k = x ; (k <=x+ 3) && (k<src.rows); k++)
+				for (int m = y ; m <= (y + 3) && (m<src.cols); m++)
+					if (src.at<uchar>(k, m) > max)
+						max = src.at<uchar>(k, m);
+			dst.at<uchar>(x, y) = max;
+		}
+	}
+}
+
+//最小值滤波
+void minfilter(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y <src.cols; y++) {
+			int min = 255;
+			for (int k = x  ; (k <= x + 3) && (k<src.rows); k++)
+				for (int m = y ; m <= (y + 3) && (m<src.cols); m++)
+					if (src.at<uchar>(k, m) < min)
+						min = src.at<uchar>(k, m);
+			dst.at<uchar>(x, y) = min;
+		}
+	}
+}
+
+//中点滤波
+void midfilter(const Mat &src, Mat &dst) {
+	dst = Mat::zeros(src.size(), src.type());
+	for (int x = 0; x < src.rows; x++) {
+		for (int y = 0; y <src.cols; y++) {
+			int max = 0, min = 255;
+			for (int k = x; (k <= x + 3) && (k < src.rows); k++)
+				for (int m = y; m <= (y + 3) && (m < src.cols); m++)
+					if (src.at<uchar>(k, m) > max)
+						max = src.at<uchar>(k, m);
+					else if (src.at<uchar>(k, m) < min)
+						min = src.at<uchar>(k, m);
+			dst.at<uchar>(x, y) =  (max + min)/2;
+		}
+	}
+}

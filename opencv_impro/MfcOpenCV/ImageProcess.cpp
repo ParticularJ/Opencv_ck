@@ -189,16 +189,9 @@ void  Histogram(const Mat &src, Mat &dst)
 	equalizeHist(src,dst);
 }
 
-//低通滤波
-int LowPass(const Mat &src, Mat &dst, int radius)
-{
-	dst = src;
-
-	return 0;
-}
-
-//DFT
-void DFT(const Mat &src, Mat &dst) {
+//fft
+void fft(const Mat &src, Mat &dst) {
+	//获得合适的傅里叶变换尺寸，一般为奇数
 	int m = getOptimalDFTSize(src.rows);
 	int n = getOptimalDFTSize(src.cols);
 	//将添加的元素初始化为0
@@ -219,7 +212,7 @@ void DFT(const Mat &src, Mat &dst) {
 	magnitudeImage += Scalar::all(1);
 	log(magnitudeImage, magnitudeImage);
 
-	//剪切和重分布，奇数行去掉，因为是虚部的
+	//剪切和重分布，奇数行去掉，因为第一步扩展的结果可能为奇数
 	//数&-2，返回最大的偶数
 	magnitudeImage = magnitudeImage(Rect(0, 0, magnitudeImage.cols&-2, magnitudeImage.rows&-2));
 	//重新排列使得远点位于中心
@@ -240,12 +233,45 @@ void DFT(const Mat &src, Mat &dst) {
 
 	//归一化，便于显示
 	normalize(magnitudeImage, magnitudeImage, 0, 1, CV_MINMAX);
+	dst = magnitudeImage;
+}
+
+//低通滤波
+void LowPass(const Mat &src, Mat &dst, int radius)
+{
+	Mat magnitudeImage;
+	fft(src, magnitudeImage);
+	int x_center = magnitudeImage.rows / 2, y_center = magnitudeImage.cols / 2;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			if(sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center))>radius)
+				magnitudeImage.at<float>(y, x) = 0;
+			else
+				magnitudeImage.at<float>(y,x)= magnitudeImage.at<float>(y, x);
+				}
+		}
 	Mat B;
 	for (int x = 0; x < magnitudeImage.rows; x++) {
 		for (int y = 0; y < magnitudeImage.cols; y++) {
 			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
-			//cout << magnitudeImage.at<float>(y, x) << endl;
-			
+		}
+	}
+	magnitudeImage.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+void  Re_LowPass(const Mat &src, Mat &dst) {
+	dst = src;
+}
+
+//DFT
+void DFT(const Mat &src, Mat &dst) {
+	Mat magnitudeImage;
+	fft(src, magnitudeImage);
+	Mat B;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
 		}
 	}
 	magnitudeImage.convertTo(B, CV_8UC1);
@@ -372,11 +398,14 @@ void midfilter(const Mat &src, Mat &dst) {
 //梯度锐化滤波
 void gradient(const Mat &src, Mat &dst) {
 	Mat dst1, dst2;
+	Mat abs_dst1, abs_dst2;
 	Mat ker1 = (Mat_<int>(3, 3) << -1, 0, 1, -1, 0, 1, -1, 0, 1);
-	filter2D(src, dst1, src.depth(),ker1);
-	Mat ker2= (Mat_<int>(3, 3) << 1, 1, 1, 0, 0, 0, -1, -1, -1);
+	filter2D(src, dst1, src.depth(), ker1);
+	convertScaleAbs(dst1, abs_dst1);
+	Mat ker2 = (Mat_<int>(3, 3) << 1, 1, 1, 0, 0, 0, -1, -1, -1);
 	filter2D(src, dst2, src.depth(), ker2);
-	dst = dst1 + dst2;
+	convertScaleAbs(dst2, abs_dst2);
+	addWeighted(abs_dst1, 0.5, abs_dst2, 0.5, 0, dst);
 }
 
 //最大最小锐化滤波
@@ -399,4 +428,111 @@ void Mmfilter(const Mat &src, Mat &dst) {
 				dst.at<uchar>(x, y) = min;
 		}
 	}
+}
+
+//高通滤波器
+void HighPass(const Mat &src, Mat &dst,double radius) {
+	Mat magnitudeImage;
+	fft(src, magnitudeImage);
+	int x_center = magnitudeImage.rows / 2, y_center = magnitudeImage.cols / 2;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			if (sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center))<radius)
+				magnitudeImage.at<float>(y, x) = 0;
+			else
+				magnitudeImage.at<float>(y, x) = magnitudeImage.at<float>(y, x);
+		}
+	}
+	Mat B;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
+		}
+	}
+	magnitudeImage.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+//巴特沃斯低通
+void BatLowPass(const Mat &src, Mat &dst, double radius) {
+	Mat magnitudeImage;
+	fft(src, magnitudeImage);
+	int x_center = magnitudeImage.rows / 2, y_center = magnitudeImage.cols / 2;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			int a = sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center)) / radius;
+			float b = 1 / (1 + pow(a, 4));
+			magnitudeImage.at<float>(x, y) = b*magnitudeImage.at<float>(x, y);
+		}
+	}
+	Mat B;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
+		}
+	}
+	magnitudeImage.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+//巴特沃斯高通
+void BatHighPass(const Mat &src, Mat &dst, double radius) {
+	Mat magnitudeImage;
+	fft(src, magnitudeImage);
+	int x_center = magnitudeImage.rows / 2, y_center = magnitudeImage.cols / 2;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			int a = radius/sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center));
+			float b = 1 / (1 + pow(a, 4));
+			magnitudeImage.at<float>(x, y) = b*magnitudeImage.at<float>(x, y);
+		}
+	}
+	Mat B;
+	for (int x = 0; x < magnitudeImage.rows; x++) {
+		for (int y = 0; y < magnitudeImage.cols; y++) {
+			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
+		}
+	}
+	magnitudeImage.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+//roberts
+void Roberts(const Mat &src, Mat &dst) {
+	Mat dst1, dst2;
+	Mat abs_dst1, abs_dst2;
+	Mat ker = (Mat_<int>(2, 2) << 1, 0, 0, -1);
+	Mat ker1 = (Mat_<int>(2, 2) << 0, 1, -1, 0);
+	filter2D(src, dst1, src.depth(),ker);
+	convertScaleAbs(dst1, abs_dst1);
+	filter2D(src, dst2,src.depth(), ker1);
+	convertScaleAbs(dst2, abs_dst2);
+	addWeighted(abs_dst1, 0.5, abs_dst2, 0.5, 0, dst);
+}
+
+//prewitt
+void Prewitt(const Mat &src, Mat &dst) {
+	Mat dst1, dst2;
+	Mat abs_dst1, abs_dst2;
+	Mat ker1 = (Mat_<int>(3, 3) << -1, 0, 1, -1, 0, 1, -1, 0, 1);
+	filter2D(src, dst1, src.depth(), ker1);
+	convertScaleAbs(dst1, abs_dst1);
+	Mat ker2 = (Mat_<int>(3, 3) << 1, 1, 1, 0, 0, 0, -1, -1, -1);
+	filter2D(src, dst2, src.depth(), ker2);
+	convertScaleAbs(dst2, abs_dst2);
+	addWeighted(abs_dst1, 0.5, abs_dst2, 0.5, 0, dst);
+}
+
+//sobel
+void sobel(const Mat &src, Mat &dst) {
+	Mat grad_x, grad_y;
+	Mat abs_grad_x, abs_grad_y;
+	//X方向的梯度
+	Sobel(src, grad_x, src.depth(), 1, 0, 3, 1, 1, 0);
+	convertScaleAbs(grad_x, abs_grad_x);
+	//y方向的梯度
+	Sobel(src, grad_y, src.depth(), 0, 1, 3, 1, 1, 0);
+	convertScaleAbs(grad_y, abs_grad_y);
+	//权值相加
+	addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst);
 }

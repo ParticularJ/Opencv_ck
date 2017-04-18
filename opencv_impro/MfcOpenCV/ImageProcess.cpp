@@ -234,6 +234,7 @@ void fft(const Mat &src, Mat &dst) {
 	//归一化，便于显示
 	normalize(magnitudeImage, magnitudeImage, 0, 1, CV_MINMAX);
 	dst = magnitudeImage;
+
 }
 
 //低通滤波
@@ -274,7 +275,7 @@ void DFT(const Mat &src, Mat &dst) {
 			magnitudeImage.at<float>(y, x) = 255 * magnitudeImage.at<float>(y, x);
 		}
 	}
-	magnitudeImage.convertTo(B, CV_8UC1);
+	magnitudeImage.convertTo(B, CV_8U);
 	dst = B;
 }
 
@@ -535,4 +536,14 @@ void sobel(const Mat &src, Mat &dst) {
 	convertScaleAbs(grad_y, abs_grad_y);
 	//权值相加
 	addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst);
+}
+
+//Laplacian
+void laplacian(const Mat &src, Mat &dst) {
+	Laplacian(src, dst, src.depth(), 3, 1, 0, BORDER_DEFAULT);
+}
+
+//canny
+void canny(const Mat &src, Mat &dst) {
+	Canny(src, dst, 3, 9, 3);
 }

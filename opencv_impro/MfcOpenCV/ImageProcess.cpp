@@ -161,6 +161,13 @@ void Rotate(const Mat &src, Mat &dst, double a)
 	//旋转后的图像大小
 	int rotate_cols = (fabs(c)*rows + fabs(d)*cols);
 	int rotate_rows = (fabs(d)*rows + fabs(c)*cols);
+
+	if ((rotate_cols % 4) != 0)
+	{
+		rotate_cols = (rotate_cols * 8 + 31) / 32 * 4;
+	}
+
+
 	//创建新的图片
 	dst.create(rotate_rows, rotate_cols, CV_8UC1);
 	/*	float map[6];
@@ -609,4 +616,9 @@ void segmentation(Mat &src, Mat &dst) {
 	Mat element = getStructuringElement(0, Size(3, 3), Point(-1, -1));
 	dilate(src, dst, element, Point(-1, -1), 5);
 	erode(dst, dst, element, Point(-1, -1), 5);
+}
+
+//复原图像
+void rebuild(const Mat &src, Mat &dst) {
+	dst = src;
 }

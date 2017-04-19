@@ -244,6 +244,21 @@ void fft(const Mat &src, Mat &dst) {
 
 }
 
+void fft1(const Mat &src, Mat &dst) {
+	//获得合适的傅里叶变换尺寸，一般为奇数
+	int m = getOptimalDFTSize(src.rows);
+	int n = getOptimalDFTSize(src.cols);
+	//将添加的元素初始化为0
+	Mat padded;
+	copyMakeBorder(src, padded, 0, m - src.rows, 0, n - src.cols, BORDER_CONSTANT, Scalar::all(0));
+	//为实部和虚部分配空间,
+	Mat planes[] = { Mat_<float>(padded),Mat::zeros(padded.size(),CV_32F) };
+	Mat complexI;
+	//2代表输入矩阵的个数
+	merge(planes, 2, complexI);
+	dft(complexI, dst);
+}
+
 //低通滤波
 void LowPass(const Mat &src, Mat &dst, int radius)
 {
@@ -621,4 +636,107 @@ void segmentation(Mat &src, Mat &dst) {
 //复原图像
 void rebuild(const Mat &src, Mat &dst) {
 	dst = src;
+}
+
+//理想低通效果
+void low_result(Mat &src, Mat &dst,double radius) {
+	Mat complexI;
+	fft1(src, complexI);
+	dst = Mat::zeros(complexI.size(), complexI.type());
+	int x_center = complexI.rows / 2, y_center = complexI.cols / 2;
+	for (int x = 0; x < complexI.rows; x++) {
+		for (int y = 0; y < complexI.cols; y++) {
+			if (sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center))>radius)
+				complexI.at<float>(y, x) = 0;
+			else
+				complexI.at<float>(y, x) = complexI.at<float>(y, x);
+		}
+	}
+	
+	idft(complexI, dst, DFT_REAL_OUTPUT);
+	normalize(dst, dst, 0, 1, CV_MINMAX);
+	Mat B;
+	for (int x = 0; x < dst.rows; x++) {
+		for (int y = 0; y < dst.cols; y++) {
+			dst.at<float>(y, x) = 255 * dst.at<float>(y, x);
+		}
+	}
+	dst.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+//理想高通
+void high_result(Mat &src, Mat &dst, double radius) {
+	Mat complexI;
+	fft1(src, complexI);
+	dst = Mat::zeros(complexI.size(), complexI.type());
+	int x_center = complexI.rows / 2, y_center = complexI.cols / 2;
+	for (int x = 0; x < complexI.rows; x++) {
+		for (int y = 0; y < complexI.cols; y++) {
+			if (sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center))<radius)
+				complexI.at<float>(y, x) = 0;
+			else
+				complexI.at<float>(y, x) = complexI.at<float>(y, x);
+		}
+	}
+
+	idft(complexI, dst, DFT_REAL_OUTPUT);
+	normalize(dst, dst, 0, 1, CV_MINMAX);
+	Mat B;
+	for (int x = 0; x < dst.rows; x++) {
+		for (int y = 0; y < dst.cols; y++) {
+			dst.at<float>(y, x) = 255 * dst.at<float>(y, x);
+		}
+	}
+	dst.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+//巴特沃斯低通效果图
+void Bat_low_result(Mat &src, Mat &dst, double radius) {
+	Mat complexI;
+	fft1(src, complexI);
+	int x_center = complexI.rows / 2, y_center = complexI.cols / 2;
+	for (int x = 0; x < complexI.rows; x++) {
+		for (int y = 0; y < complexI.cols; y++) {
+			int a = sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center)) / radius;
+			float b = 1 / (1 + pow(a, 4));
+			complexI.at<float>(x, y) = b*complexI.at<float>(x, y);
+		}
+	}
+	idft(complexI, dst, DFT_REAL_OUTPUT);
+	normalize(dst, dst, 0, 1, CV_MINMAX);
+	Mat B;
+	for (int x = 0; x < dst.rows; x++) {
+		for (int y = 0; y < dst.cols; y++) {
+			dst.at<float>(y, x) = 255 * dst.at<float>(y, x);
+		}
+	}
+	dst.convertTo(B, CV_8UC1);
+	dst = B;
+}
+
+//巴特沃斯高通效果图
+void Bat_high_result(Mat &src, Mat &dst, double radius) {
+	Mat complexI;
+	fft1(src, complexI);
+	int x_center = complexI.rows / 2, y_center = complexI.cols / 2;
+	for (int x = 0; x < complexI.rows; x++) {
+		for (int y = 0; y < complexI.cols; y++) {
+			int a =radius/ sqrt((x - x_center)*(x - x_center) + (y - y_center)*(y - y_center)) ;
+			float b = 1 / (1 + pow(a, 4));
+			complexI.at<float>(x, y) = b*complexI.at<float>(x, y);
+		}
+	}
+
+	idft(complexI, dst, DFT_REAL_OUTPUT);
+	normalize(dst, dst, 0, 1, CV_MINMAX);
+	Mat B;
+	for (int x = 0; x < dst.rows; x++) {
+		for (int y = 0; y < dst.cols; y++) {
+			dst.at<float>(y, x) = 255 * dst.at<float>(y, x);
+		}
+	}
+	dst.convertTo(B, CV_8UC1);
+	dst = B;
 }

@@ -161,15 +161,12 @@ void Rotate(const Mat &src, Mat &dst, double a)
 	//旋转后的图像大小
 	int rotate_cols = (fabs(c)*rows + fabs(d)*cols);
 	int rotate_rows = (fabs(d)*rows + fabs(c)*cols);
-
-	if ((rotate_cols % 4) != 0)
+	//创建新的图片
+	if ((rotate_cols % 4) != 0|| (rotate_rows % 4) != 0)
 	{
 		rotate_cols = (rotate_cols * 8 + 31) / 32 * 4;
+		rotate_rows = (rotate_rows * 8 + 31) / 32 * 4;
 	}
-
-
-	//创建新的图片
-	dst.create(rotate_rows, rotate_cols, CV_8UC1);
 	/*	float map[6];
 	map[0] = b;
 	map[1] = a;
@@ -178,15 +175,14 @@ void Rotate(const Mat &src, Mat &dst, double a)
 	map[2] += (rotate_rows - rows) / 2;
 	map[5] += (rotate_cols - cols) / 2;
 	cout << map[0];*/
-	Mat map_matrix = Mat(2, 3, CV_8UC1);
+	Mat map_matrix = Mat(2, 3, CV_8UC3);
 	CvPoint2D32f center = cvPoint2D32f(rows / 2, cols / 2);
-	map_matrix = getRotationMatrix2D(center, a, 1.0);
+	map_matrix = getRotationMatrix2D(center, a, 1);
 	map_matrix.at<double>(0, 2) += (int)((rotate_rows - rows) / 2);
 	map_matrix.at<double>(1, 2) += (int)((rotate_cols - cols) / 2);
-
-	////对图像做仿射变换  
-	////CV_WARP_FILL_OUTLIERS - 填充所有输出图像的象素。  
-	////如果部分象素落在输入图像的边界外，那么它们的值设定为 fillval.  
+	//对图像做仿射变换  
+	//CV_WARP_FILL_OUTLIERS - 填充所有输出图像的象素。  
+	//如果部分象素落在输入图像的边界外，那么它们的值设定为 fillval.  '
 	warpAffine(src, dst, map_matrix, Size(rotate_rows, rotate_cols), CV_WARP_FILL_OUTLIERS, BORDER_CONSTANT, cvScalarAll(255));
 }
 
